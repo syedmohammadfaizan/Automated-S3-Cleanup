@@ -1,0 +1,31 @@
+import boto3
+from datetime import datetime, timezone, timedelta
+
+s3 = boto3.client('s3')
+
+def lambda_handler(event, context):
+    # Direct bucket name
+    bucket_name = 'my-old-files-bucket'
+    minutes_old = 2  # Default: 30 days old files will be deleted
+
+    threshold = datetime.now(timezone.utc) - timedelta(minutes=minutes_old)
+    paginator = s3.get_paginator('list_objects_v2')
+    deleted = []
+
+    for page in paginator.paginate(Bucket=bucket_name):
+        for obj in page.get('Contents', []):
+            key = obj['Key']
+            last_modified = obj['LastModified']
+            if last_modified < threshold:
+                try:
+                    s3.delete_object(Bucket=bucket_name, Key=key)
+                    deleted.append(key)
+                    print(f"Deleted: {key}")
+                except Exception as e:
+                    print(f"Failed to delete {key}: {e}")
+
+    return {
+        "status": "done",
+        "deleted_count": len(deleted),
+        "deleted_keys": deleted[:20]  # show up to 20 keys in return
+    }
