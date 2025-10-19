@@ -72,5 +72,5 @@ def lambda_handler(event, context):
         "deleted_count": len(deleted),
         "deleted_keys": deleted[:20]
     }
-
+```
 Linkedin Link: https://www.linkedin.com/posts/md-faizan-bb9998234_aws-serverless-lambda-activity-7385730847351406592-G4zt?utm_source=share&utm_medium=member_desktop&rcm=ACoAADqFwb0B3mY-3tfXzS8MUobP_65azcolSNo
